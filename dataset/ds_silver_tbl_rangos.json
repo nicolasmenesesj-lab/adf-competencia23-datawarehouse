@@ -1,0 +1,37 @@
+{
+	"name": "ds_silver_tbl_rangos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_destino_dw_ffaa",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "silver"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id_rango",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "descripcion_rango",
+				"type": "varchar"
+			},
+			{
+				"name": "categoria_rango",
+				"type": "varchar"
+			},
+			{
+				"name": "fuerza",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "silver",
+			"table": "tbl_rangos"
+		}
+	}
+}

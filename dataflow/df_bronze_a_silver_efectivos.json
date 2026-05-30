@@ -1,0 +1,37 @@
+{
+	"name": "df_bronze_a_silver_efectivos",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_bronze_tbl_efectivos",
+						"type": "DatasetReference"
+					},
+					"name": "OrigenBronzeEfectivos"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          id_efectivo as integer,",
+				"          ci as string,",
+				"          nombre as string,",
+				"          paterno as string,",
+				"          materno as string,",
+				"          fecha_nacimiento as string,",
+				"          genero as string,",
+				"          id_rango as integer,",
+				"          id_unidad as integer,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> OrigenBronzeEfectivos"
+			]
+		}
+	}
+}
