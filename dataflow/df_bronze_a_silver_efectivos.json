@@ -21,7 +21,11 @@
 					"name": "DestinoSilverEfectivos"
 				}
 			],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "MapeoEfectivos"
+				}
+			],
 			"scriptLines": [
 				"source(output(",
 				"          id_efectivo as integer,",
@@ -39,7 +43,21 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> OrigenBronzeEfectivos",
-				"OrigenBronzeEfectivos sink(allowSchemaDrift: true,",
+				"OrigenBronzeEfectivos select(mapColumn(",
+				"          id_efectivo,",
+				"          ci,",
+				"          nombre,",
+				"          paterno,",
+				"          materno,",
+				"          fecha_nacimiento,",
+				"          genero,",
+				"          id_rango,",
+				"          id_unidad,",
+				"          estado",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> MapeoEfectivos",
+				"MapeoEfectivos sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          id_efectivo as integer,",
