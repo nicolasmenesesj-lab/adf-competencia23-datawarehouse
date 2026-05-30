@@ -1,0 +1,92 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-ucb-dw-ffaa-12341113"
+		},
+		"ls_destino_dw_ffaa_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_destino_dw_ffaa'"
+		},
+		"ls_fuente_fuerzas_armadas_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_fuente_fuerzas_armadas'"
+		},
+		"ls_destino_dw_ffaa_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sql-ucb-sisger-ffaa-12341113.database.windows.net"
+		},
+		"ls_destino_dw_ffaa_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "dw_fuerzas_armadas"
+		},
+		"ls_destino_dw_ffaa_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "nicolas"
+		},
+		"ls_fuente_fuerzas_armadas_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "server02-fuerzas-armadas-bolivia.database.windows.net"
+		},
+		"ls_fuente_fuerzas_armadas_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "erp-fuerzas-armadas-bolivia-2"
+		},
+		"ls_fuente_fuerzas_armadas_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "userSisGer"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_destino_dw_ffaa')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('ls_destino_dw_ffaa_properties_typeProperties_server')]",
+					"database": "[parameters('ls_destino_dw_ffaa_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('ls_destino_dw_ffaa_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_destino_dw_ffaa_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_fuente_fuerzas_armadas')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('ls_fuente_fuerzas_armadas_properties_typeProperties_server')]",
+					"database": "[parameters('ls_fuente_fuerzas_armadas_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('ls_fuente_fuerzas_armadas_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_fuente_fuerzas_armadas_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

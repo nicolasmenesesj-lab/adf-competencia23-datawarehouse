@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-ucb-dw-ffaa-12341113"
+		},
+		"ls_destino_dw_ffaa_password": {
+			"value": ""
+		},
+		"ls_fuente_fuerzas_armadas_password": {
+			"value": ""
+		},
+		"ls_destino_dw_ffaa_properties_typeProperties_server": {
+			"value": "sql-ucb-sisger-ffaa-12341113.database.windows.net"
+		},
+		"ls_destino_dw_ffaa_properties_typeProperties_database": {
+			"value": "dw_fuerzas_armadas"
+		},
+		"ls_destino_dw_ffaa_properties_typeProperties_userName": {
+			"value": "nicolas"
+		},
+		"ls_fuente_fuerzas_armadas_properties_typeProperties_server": {
+			"value": "server02-fuerzas-armadas-bolivia.database.windows.net"
+		},
+		"ls_fuente_fuerzas_armadas_properties_typeProperties_database": {
+			"value": "erp-fuerzas-armadas-bolivia-2"
+		},
+		"ls_fuente_fuerzas_armadas_properties_typeProperties_userName": {
+			"value": "userSisGer"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
