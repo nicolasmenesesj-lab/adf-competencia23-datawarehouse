@@ -73,20 +73,6 @@
 								}
 							},
 							{
-								"sink": {
-									"name": "paterno",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
-								"sink": {
-									"name": "materno",
-									"type": "String",
-									"physicalType": "varchar"
-								}
-							},
-							{
 								"source": {
 									"name": "fecha_nacimiento",
 									"type": "String",
