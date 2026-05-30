@@ -1047,6 +1047,9 @@
 					],
 					"transformations": [
 						{
+							"name": "ConstruirCamposSilver"
+						},
+						{
 							"name": "MapeoEfectivos"
 						}
 					],
@@ -1067,6 +1070,9 @@
 						"     validateSchema: false,",
 						"     isolationLevel: 'READ_UNCOMMITTED',",
 						"     format: 'table') ~> OrigenBronzeEfectivos",
+						"MapeoEfectivos derive(nombre_completo = initCap(nombre),",
+						"          paterno = 'No Registrado',",
+						"          materno = 'No Registrado') ~> ConstruirCamposSilver",
 						"OrigenBronzeEfectivos select(mapColumn(",
 						"          id_efectivo,",
 						"          ci,",
@@ -1081,7 +1087,7 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> MapeoEfectivos",
-						"MapeoEfectivos sink(allowSchemaDrift: true,",
+						"ConstruirCamposSilver sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
 						"          id_efectivo as integer,",
