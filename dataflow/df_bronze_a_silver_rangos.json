@@ -1,0 +1,67 @@
+{
+	"name": "df_bronze_a_silver_rangos",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_bronze_tbl_rangos",
+						"type": "DatasetReference"
+					},
+					"name": "OrigenBronzeRangos"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_silver_tbl_rangos",
+						"type": "DatasetReference"
+					},
+					"name": "DestinoSilverRangos"
+				}
+			],
+			"transformations": [
+				{
+					"name": "MapeoRangos"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id_rango as integer,",
+				"          descripcion_rango as string,",
+				"          categoria_rango as string,",
+				"          fuerza as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> OrigenBronzeRangos",
+				"OrigenBronzeRangos select(mapColumn(",
+				"          id_rango,",
+				"          descripcion_rango,",
+				"          categoria_rango,",
+				"          fuerza",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> MapeoRangos",
+				"MapeoRangos sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id_rango as integer,",
+				"          descripcion_rango as string,",
+				"          categoria_rango as string,",
+				"          fuerza as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> DestinoSilverRangos"
+			]
+		}
+	}
+}

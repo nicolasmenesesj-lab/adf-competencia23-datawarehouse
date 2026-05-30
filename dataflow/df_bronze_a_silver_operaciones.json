@@ -1,0 +1,73 @@
+{
+	"name": "df_bronze_a_silver_operaciones",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_bronze_tbl_operaciones",
+						"type": "DatasetReference"
+					},
+					"name": "OrigenBronzeOperaciones"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_silver_tbl_operaciones",
+						"type": "DatasetReference"
+					},
+					"name": "DestinoSilverOperaciones"
+				}
+			],
+			"transformations": [
+				{
+					"name": "MapeoOperaciones"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id_operacion as integer,",
+				"          nombre_operacion as string,",
+				"          tipo_operacion as string,",
+				"          fecha_inicio as string,",
+				"          fecha_fin as string,",
+				"          presupuesto_asignado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> OrigenBronzeOperaciones",
+				"OrigenBronzeOperaciones select(mapColumn(",
+				"          id_operacion,",
+				"          nombre_operacion,",
+				"          tipo_operacion,",
+				"          fecha_inicio,",
+				"          fecha_fin,",
+				"          presupuesto_asignado",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> MapeoOperaciones",
+				"MapeoOperaciones sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id_operacion as integer,",
+				"          nombre_operacion as string,",
+				"          tipo_operacion as string,",
+				"          fecha_inicio as date,",
+				"          fecha_fin as date,",
+				"          presupuesto_asignado as decimal(18,2)",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> DestinoSilverOperaciones"
+			]
+		}
+	}
+}
