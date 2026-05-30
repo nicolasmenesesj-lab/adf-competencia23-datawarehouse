@@ -480,6 +480,80 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "df_bronze_a_silver_rangos",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Transformar_Efectivos",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_a_silver_rangos",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"OrigenBronzeRangos": {},
+									"DestinoSilverRangos": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_bronze_a_silver_operaciones",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Transformar_Efectivos",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_a_silver_operaciones",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"OrigenBronzeOperaciones": {},
+									"DestinoSilverOperaciones": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -488,7 +562,9 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bronze_a_silver_efectivos')]"
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_a_silver_efectivos')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_a_silver_rangos')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_a_silver_operaciones')]"
 			]
 		},
 		{
@@ -1159,6 +1235,158 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_efectivos')]",
 				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_efectivos')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_bronze_a_silver_rangos')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_bronze_tbl_rangos",
+								"type": "DatasetReference"
+							},
+							"name": "OrigenBronzeRangos"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_silver_tbl_rangos",
+								"type": "DatasetReference"
+							},
+							"name": "DestinoSilverRangos"
+						}
+					],
+					"transformations": [
+						{
+							"name": "MapeoRangos"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id_rango as integer,",
+						"          descripcion_rango as string,",
+						"          categoria_rango as string,",
+						"          fuerza as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> OrigenBronzeRangos",
+						"OrigenBronzeRangos select(mapColumn(",
+						"          id_rango,",
+						"          descripcion_rango,",
+						"          categoria_rango,",
+						"          fuerza",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> MapeoRangos",
+						"MapeoRangos sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id_rango as integer,",
+						"          descripcion_rango as string,",
+						"          categoria_rango as string,",
+						"          fuerza as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> DestinoSilverRangos"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_rangos')]",
+				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_rangos')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_bronze_a_silver_operaciones')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_bronze_tbl_operaciones",
+								"type": "DatasetReference"
+							},
+							"name": "OrigenBronzeOperaciones"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_silver_tbl_operaciones",
+								"type": "DatasetReference"
+							},
+							"name": "DestinoSilverOperaciones"
+						}
+					],
+					"transformations": [
+						{
+							"name": "MapeoOperaciones"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id_operacion as integer,",
+						"          nombre_operacion as string,",
+						"          tipo_operacion as string,",
+						"          fecha_inicio as string,",
+						"          fecha_fin as string,",
+						"          presupuesto_asignado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> OrigenBronzeOperaciones",
+						"OrigenBronzeOperaciones select(mapColumn(",
+						"          id_operacion,",
+						"          nombre_operacion,",
+						"          tipo_operacion,",
+						"          fecha_inicio,",
+						"          fecha_fin,",
+						"          presupuesto_asignado",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> MapeoOperaciones",
+						"MapeoOperaciones sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id_operacion as integer,",
+						"          nombre_operacion as string,",
+						"          tipo_operacion as string,",
+						"          fecha_inicio as date,",
+						"          fecha_fin as date,",
+						"          presupuesto_asignado as decimal(18,2)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> DestinoSilverOperaciones"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_operaciones')]",
+				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_operaciones')]"
 			]
 		}
 	]
