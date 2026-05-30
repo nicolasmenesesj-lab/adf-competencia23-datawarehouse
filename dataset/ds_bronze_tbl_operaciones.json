@@ -1,0 +1,45 @@
+{
+	"name": "ds_bronze_tbl_operaciones",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_destino_dw_ffaa",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "bronze"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id_operacion",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre_operacion",
+				"type": "varchar"
+			},
+			{
+				"name": "tipo_operacion",
+				"type": "varchar"
+			},
+			{
+				"name": "fecha_inicio",
+				"type": "varchar"
+			},
+			{
+				"name": "fecha_fin",
+				"type": "varchar"
+			},
+			{
+				"name": "presupuesto_asignado",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "bronze",
+			"table": "tbl_operaciones"
+		}
+	}
+}
