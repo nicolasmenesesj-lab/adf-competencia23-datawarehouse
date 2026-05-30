@@ -466,6 +466,160 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_silver_tbl_efectivos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_efectivo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ci",
+						"type": "varchar"
+					},
+					{
+						"name": "nombre_completo",
+						"type": "varchar"
+					},
+					{
+						"name": "fecha_nacimiento",
+						"type": "date"
+					},
+					{
+						"name": "genero",
+						"type": "varchar"
+					},
+					{
+						"name": "id_rango",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_unidad",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "estado",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "silver",
+					"table": "tbl_efectivos"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_silver_tbl_operaciones')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_operacion",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "nombre_operacion",
+						"type": "varchar"
+					},
+					{
+						"name": "tipo_operacion",
+						"type": "varchar"
+					},
+					{
+						"name": "fecha_inicio",
+						"type": "date"
+					},
+					{
+						"name": "fecha_fin",
+						"type": "date"
+					},
+					{
+						"name": "presupuesto_asignado",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					}
+				],
+				"typeProperties": {
+					"schema": "silver",
+					"table": "tbl_operaciones"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_silver_tbl_rangos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_rango",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "descripcion_rango",
+						"type": "varchar"
+					},
+					{
+						"name": "categoria_rango",
+						"type": "varchar"
+					},
+					{
+						"name": "fuerza",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "silver",
+					"table": "tbl_rangos"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pl_extraccion_bronze')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -864,6 +1018,77 @@
 				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_operaciones')]",
 				"[concat(variables('factoryId'), '/datasets/ds_fuente_rangos')]",
 				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_rangos')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_bronze_a_silver_efectivos')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_bronze_tbl_efectivos",
+								"type": "DatasetReference"
+							},
+							"name": "OrigenBronzeEfectivos"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_silver_tbl_efectivos",
+								"type": "DatasetReference"
+							},
+							"name": "DestinoSilverEfectivos"
+						}
+					],
+					"transformations": [],
+					"scriptLines": [
+						"source(output(",
+						"          id_efectivo as integer,",
+						"          ci as string,",
+						"          nombre as string,",
+						"          paterno as string,",
+						"          materno as string,",
+						"          fecha_nacimiento as string,",
+						"          genero as string,",
+						"          id_rango as integer,",
+						"          id_unidad as integer,",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> OrigenBronzeEfectivos",
+						"OrigenBronzeEfectivos sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id_efectivo as integer,",
+						"          ci as string,",
+						"          nombre_completo as string,",
+						"          fecha_nacimiento as date,",
+						"          genero as string,",
+						"          id_rango as integer,",
+						"          id_unidad as integer,",
+						"          estado as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> DestinoSilverEfectivos"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_efectivos')]",
+				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_efectivos')]"
 			]
 		}
 	]
