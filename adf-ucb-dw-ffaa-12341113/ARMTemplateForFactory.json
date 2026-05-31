@@ -1293,7 +1293,7 @@
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> MapeoOperaciones",
-						"MapeoOperaciones derive(presupuesto_asignado = iif(isNull(presupuesto_asignado) || toString(presupuesto_asignado) == '', toDecimal(0.0, 18, 2), toDecimal(presupuesto_asignado, 18, 2))) ~> ConvertirTiposOperaciones",
+						"MapeoOperaciones derive(presupuesto_asignado = iif(isNull(presupuesto_asignado) || toString(presupuesto_asignado) == '' || presupuesto_asignado == 'NULL', toDecimal(0.0, 18, 2), toDecimal(presupuesto_asignado, 18, 2))) ~> ConvertirTiposOperaciones",
 						"ConvertirTiposOperaciones sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -1311,7 +1311,15 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> DestinoSilverOperaciones"
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          id_operacion,",
+						"          nombre_operacion,",
+						"          tipo_operacion,",
+						"          fecha_inicio,",
+						"          fecha_fin,",
+						"          presupuesto_asignado",
+						"     )) ~> DestinoSilverOperaciones"
 					]
 				}
 			},
