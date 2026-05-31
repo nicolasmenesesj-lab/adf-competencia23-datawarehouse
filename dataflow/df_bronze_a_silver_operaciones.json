@@ -52,7 +52,8 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> MapeoOperaciones",
-				"MapeoOperaciones derive(presupuesto_asignado = iif(isNull(presupuesto_asignado) || toString(presupuesto_asignado) == '' || presupuesto_asignado == 'NULL', toDecimal(0.0, 18, 2), toDecimal(presupuesto_asignado, 18, 2))) ~> ConvertirTiposOperaciones",
+				"MapeoOperaciones derive(presupuesto_limpio = iif(isNull(presupuesto_asignado) || toString(presupuesto_asignado) == '' || presupuesto_asignado == 'NULL', toDecimal(0.0, 18, 2), toDecimal(presupuesto_asignado, 18, 2)),",
+				"          presupuesto_asignado = iif(isNull(presupuesto_asignado) || toString(presupuesto_asignado) == '' || presupuesto_asignado == 'NULL', toDecimal(0.0, 18, 2), toDecimal(presupuesto_asignado, 18, 2))) ~> ConvertirTiposOperaciones",
 				"ConvertirTiposOperaciones sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -77,7 +78,7 @@
 				"          tipo_operacion,",
 				"          fecha_inicio,",
 				"          fecha_fin,",
-				"          presupuesto_asignado",
+				"          presupuesto_asignado = presupuesto_limpio",
 				"     )) ~> DestinoSilverOperaciones"
 			]
 		}
