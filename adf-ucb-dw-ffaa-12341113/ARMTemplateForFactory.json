@@ -429,6 +429,63 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Copiar_Movimientos",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "Copiar_Efectivos",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"preCopyScript": "TRUNCATE TABLE bronze.tbl_movimientos_personal",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_fuente_movimientos",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_bronze_movimientos",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -442,7 +499,9 @@
 				"[concat(variables('factoryId'), '/datasets/ds_fuente_operaciones')]",
 				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_operaciones')]",
 				"[concat(variables('factoryId'), '/datasets/ds_fuente_rangos')]",
-				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_rangos')]"
+				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_rangos')]",
+				"[concat(variables('factoryId'), '/datasets/ds_fuente_movimientos')]",
+				"[concat(variables('factoryId'), '/datasets/ds_bronze_movimientos')]"
 			]
 		},
 		{
@@ -1760,6 +1819,59 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_rangos')]",
 				"[concat(variables('factoryId'), '/datasets/ds_gold_dim_rango')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_bronze_movimientos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "bronze"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_movimiento",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_efectivo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_unidad_origen",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_unidad_destino",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "fecha_orden",
+						"type": "varchar"
+					},
+					{
+						"name": "motivo_cambio",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "bronze",
+					"table": "tbl_movimientos_personal"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
 			]
 		}
 	]
