@@ -375,6 +375,61 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "Copiar_Movimientos",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copiar_Efectivos",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE bronze.tbl_movimientos_personal",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "ds_fuente_movimientos",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "ds_bronze_movimientos",
+						"type": "DatasetReference"
+					}
+				]
 			}
 		],
 		"annotations": []

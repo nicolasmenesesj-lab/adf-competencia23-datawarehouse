@@ -1,0 +1,48 @@
+{
+	"name": "ds_bronze_movimientos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_destino_dw_ffaa",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "bronze"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id_movimiento",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "id_efectivo",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "id_unidad_origen",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "id_unidad_destino",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "fecha_orden",
+				"type": "varchar"
+			},
+			{
+				"name": "motivo_cambio",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "bronze",
+			"table": "tbl_movimientos_personal"
+		}
+	}
+}
