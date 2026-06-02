@@ -805,6 +805,72 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_fuente_movimientos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_fuente_fuerzas_armadas",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "fuentes"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_movimiento",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_efectivo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_unidad_destino",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_rango",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_tipo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "fecha_movimiento",
+						"type": "varchar"
+					},
+					{
+						"name": "antiguedad_anios",
+						"type": "varchar"
+					},
+					{
+						"name": "salario_mensual",
+						"type": "varchar"
+					},
+					{
+						"name": "observaciones",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "oltp",
+					"table": "tbl_movimientos_personal"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_fuente_fuerzas_armadas')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_fuente_operaciones')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -942,6 +1008,123 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_fuente_fuerzas_armadas')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_gold_dim_efectivo')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_efective",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ci",
+						"type": "varchar"
+					},
+					{
+						"name": "nombre_completo",
+						"type": "varchar"
+					},
+					{
+						"name": "genero",
+						"type": "varchar"
+					},
+					{
+						"name": "estado",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "dim_efectivo"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_gold_dim_operacion')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_tipo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "nombre",
+						"type": "varchar"
+					},
+					{
+						"name": "categoria",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "dim_tipo_operacion"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_gold_dim_rango')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_rango",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "descripcion_rango",
+						"type": "varchar"
+					},
+					{
+						"name": "categoria_rango",
+						"type": "varchar"
+					},
+					{
+						"name": "fuerza",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "dim_rango"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
 			]
 		},
 		{
@@ -1407,6 +1590,176 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_rangos')]",
 				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_rangos')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_a_gold_dim_efectivo')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_silver_tbl_efectivos",
+								"type": "DatasetReference"
+							},
+							"name": "OrigenSilverEfectivos"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_gold_dim_efectivo",
+								"type": "DatasetReference"
+							},
+							"name": "DestinoGoldDimEfectivo"
+						}
+					],
+					"transformations": [
+						{
+							"name": "MapeoEfectivos"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id_efectivo as integer,",
+						"          ci as string,",
+						"          nombre_completo as string,",
+						"          fecha_nacimiento as date,",
+						"          genero as string,",
+						"          id_rango as integer,",
+						"          id_unidad as integer,",
+						"          estado as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> OrigenSilverEfectivos",
+						"OrigenSilverEfectivos select(mapColumn(",
+						"          id_efectivo,",
+						"          ci,",
+						"          nombre_completo,",
+						"          fecha_nacimiento,",
+						"          genero,",
+						"          id_rango,",
+						"          id_unidad,",
+						"          estado",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> MapeoEfectivos",
+						"MapeoEfectivos sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id_efective as integer,",
+						"          ci as string,",
+						"          nombre_completo as string,",
+						"          genero as string,",
+						"          estado as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          id_efective = id_efectivo,",
+						"          ci,",
+						"          nombre_completo,",
+						"          genero,",
+						"          estado",
+						"     )) ~> DestinoGoldDimEfectivo"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_efectivos')]",
+				"[concat(variables('factoryId'), '/datasets/ds_gold_dim_efectivo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_a_gold_dim_rango')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_silver_tbl_rangos",
+								"type": "DatasetReference"
+							},
+							"name": "OrigenSilverRangos"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_gold_dim_rango",
+								"type": "DatasetReference"
+							},
+							"name": "DestinoGoldDimRango"
+						}
+					],
+					"transformations": [
+						{
+							"name": "MapeoRangos"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id_rango as integer,",
+						"          descripcion_rango as string,",
+						"          categoria_rango as string,",
+						"          fuerza as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> OrigenSilverRangos",
+						"OrigenSilverRangos select(mapColumn(",
+						"          id_rango,",
+						"          descripcion_rango,",
+						"          categoria_rango,",
+						"          fuerza",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> MapeoRangos",
+						"MapeoRangos sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id_rango as integer,",
+						"          descripcion_rango as string,",
+						"          categoria_rango as string,",
+						"          fuerza as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          id_rango,",
+						"          descripcion_rango,",
+						"          categoria_rango,",
+						"          fuerza",
+						"     )) ~> DestinoGoldDimRango"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_rangos')]",
+				"[concat(variables('factoryId'), '/datasets/ds_gold_dim_rango')]"
 			]
 		}
 	]

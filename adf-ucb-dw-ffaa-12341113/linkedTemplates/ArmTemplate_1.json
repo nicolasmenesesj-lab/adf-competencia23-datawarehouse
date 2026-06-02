@@ -1,0 +1,211 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adf-ucb-dw-ffaa-12341113"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_a_gold_dim_rango')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_silver_tbl_rangos",
+								"type": "DatasetReference"
+							},
+							"name": "OrigenSilverRangos"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_gold_dim_rango",
+								"type": "DatasetReference"
+							},
+							"name": "DestinoGoldDimRango"
+						}
+					],
+					"transformations": [
+						{
+							"name": "MapeoRangos"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id_rango as integer,",
+						"          descripcion_rango as string,",
+						"          categoria_rango as string,",
+						"          fuerza as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> OrigenSilverRangos",
+						"OrigenSilverRangos select(mapColumn(",
+						"          id_rango,",
+						"          descripcion_rango,",
+						"          categoria_rango,",
+						"          fuerza",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> MapeoRangos",
+						"MapeoRangos sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id_rango as integer,",
+						"          descripcion_rango as string,",
+						"          categoria_rango as string,",
+						"          fuerza as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          id_rango,",
+						"          descripcion_rango,",
+						"          categoria_rango,",
+						"          fuerza",
+						"     )) ~> DestinoGoldDimRango"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_transformacion_silver')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Transformar_Efectivos",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_a_silver_efectivos",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"OrigenBronzeEfectivos": {},
+									"DestinoSilverEfectivos": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_bronze_a_silver_rangos",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Transformar_Efectivos",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_a_silver_rangos",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"OrigenBronzeRangos": {},
+									"DestinoSilverRangos": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "df_bronze_a_silver_operaciones",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Transformar_Efectivos",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_a_silver_operaciones",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"OrigenBronzeOperaciones": {},
+									"DestinoSilverOperaciones": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
