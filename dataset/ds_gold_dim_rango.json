@@ -1,0 +1,34 @@
+{
+	"name": "ds_gold_dim_rango",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_destino_dw_ffaa",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id_rango",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "descripcion_rango",
+				"type": "varchar"
+			},
+			{
+				"name": "categoria_rango",
+				"type": "varchar"
+			},
+			{
+				"name": "fuerza",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "gold",
+			"table": "dim_rango"
+		}
+	}
+}
