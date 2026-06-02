@@ -1,0 +1,114 @@
+{
+	"name": "df_bronze_a_silver_movimientos_personal",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_bronze_movimientos",
+						"type": "DatasetReference"
+					},
+					"name": "SourceBronzeMovimientos"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_silver_movimientos",
+						"type": "DatasetReference"
+					},
+					"name": "SinkSilverMovimientos"
+				}
+			],
+			"transformations": [
+				{
+					"name": "LimpiarTipos"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          id_movimiento as integer,",
+				"          id_efectivo as integer,",
+				"          id_unidad_destino as integer,",
+				"          id_rango as integer,",
+				"          id_tipo as integer,",
+				"          fecha_movimiento as string,",
+				"          antiguedad_anios as string,",
+				"          salario_mensual as string,",
+				"          observaciones as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceBronzeMovimientos",
+				"SourceBronzeMovimientos derive(fecha_movimiento = iif(regexMatch(trim(fecha_movimiento),'[0-9]{8}'),\r",
+				"  toDate(concat(left(trim(fecha_movimiento),4),'-',\r",
+				"    substring(trim(fecha_movimiento),5,2),'-',\r",
+				"    right(trim(fecha_movimiento),2)),'yyyy-MM-dd'),\r",
+				"  iif(regexMatch(trim(fecha_movimiento),'[0-9]{4}[-/][0-9]{2}[-/][0-9]{2}'),\r",
+				"    toDate(regexReplace(trim(fecha_movimiento),'/','-'),'yyyy-MM-dd'),\r",
+				"    iif(regexMatch(trim(fecha_movimiento),'[0-9]{2}/[0-9]{2}/[0-9]{4}'),\r",
+				"      toDate(trim(fecha_movimiento),'dd/MM/yyyy'),\r",
+				"      iif(toInteger(substring(trim(fecha_movimiento),4,2)) > 12,\r",
+				"        toDate(trim(fecha_movimiento),'MM-dd-yyyy'),\r",
+				"        toDate(trim(fecha_movimiento),'dd-MM-yyyy')\r",
+				"      )\r",
+				"    )\r",
+				"  )\r",
+				"),",
+				"          antiguedad_anios = iif(\r",
+				"  isNull(antiguedad_anios) || \r",
+				"  length(regexReplace(trim(antiguedad_anios),'[^0-9]','')) == 0,\r",
+				"  0,\r",
+				"  toInteger(regexReplace(trim(antiguedad_anios),'[^0-9]',''))\r",
+				"),",
+				"          salario_mensual = toDecimal(\r",
+				"  iif(\r",
+				"    isNull(salario_mensual) || \r",
+				"    length(regexReplace(trim(salario_mensual),'[^0-9]','')) == 0,\r",
+				"    '0',\r",
+				"    regexReplace(\r",
+				"      regexReplace(trim(salario_mensual),'[^0-9.,]',''),\r",
+				"      ',',''\r",
+				"    )\r",
+				"  ),\r",
+				"  18, 2\r",
+				")) ~> LimpiarTipos",
+				"LimpiarTipos sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          id_movimiento as integer,",
+				"          id_efectivo as integer,",
+				"          id_unidad_destino as integer,",
+				"          id_rango as integer,",
+				"          id_tipo as integer,",
+				"          fecha_movimiento as date,",
+				"          antiguedad_anios as integer,",
+				"          salario_mensual as decimal(18,2),",
+				"          observaciones as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          id_movimiento,",
+				"          id_efectivo,",
+				"          id_unidad_destino,",
+				"          id_rango,",
+				"          id_tipo,",
+				"          fecha_movimiento,",
+				"          antiguedad_anios,",
+				"          salario_mensual,",
+				"          observaciones",
+				"     )) ~> SinkSilverMovimientos"
+			]
+		}
+	}
+}
