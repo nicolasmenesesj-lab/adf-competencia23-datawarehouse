@@ -1,0 +1,42 @@
+{
+	"name": "ds_bronze_tbl_unidades",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_destino_dw_ffaa",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "bronze"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "id_unidad",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre_unidad",
+				"type": "varchar"
+			},
+			{
+				"name": "tipo_unidad",
+				"type": "varchar"
+			},
+			{
+				"name": "id_division",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ubicacion_geografica",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "bronze",
+			"table": "tbl_unidades"
+		}
+	}
+}
