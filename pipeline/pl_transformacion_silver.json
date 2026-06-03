@@ -5,6 +5,8 @@
 			{
 				"name": "Transformar_Efectivos",
 				"type": "ExecuteDataFlow",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -122,14 +124,7 @@
 			{
 				"name": "df_bronze_a_silver_movimientos_personal",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "Transformar_Efectivos",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
