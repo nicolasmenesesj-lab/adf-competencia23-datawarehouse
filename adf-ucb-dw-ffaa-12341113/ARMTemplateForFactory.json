@@ -79,6 +79,27 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -618,6 +639,8 @@
 					{
 						"name": "Transformar_Efectivos",
 						"type": "ExecuteDataFlow",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -759,14 +782,7 @@
 					{
 						"name": "df_bronze_a_silver_movimientos_personal",
 						"type": "ExecuteDataFlow",
-						"dependsOn": [
-							{
-								"activity": "Transformar_Efectivos",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
+						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
 							"retry": 0,
@@ -1594,6 +1610,9 @@
 				"linkedServiceName": {
 					"referenceName": "ls_destino_dw_ffaa",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gold"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -2710,6 +2729,9 @@
 						},
 						{
 							"name": "GenerarCampos"
+						},
+						{
+							"name": "FiltrarNulos"
 						}
 					],
 					"scriptLines": [
@@ -2773,12 +2795,13 @@
 						"select1, select2, select3 union(byName: true)~> union1",
 						"union1 aggregate(groupBy(fecha),",
 						"     total = count(1)) ~> FechasDistintas",
-						"FechasDistintas derive(id_tiempo = year(fecha)*10000 + month(fecha)*100 + dayOfMonth(fecha),",
+						"FiltrarNulos derive(id_tiempo = year(fecha)*10000 + month(fecha)*100 + dayOfMonth(fecha),",
 						"          anio = year(fecha),",
 						"          mes = month(fecha),",
 						"          nombre_mes = case(month(fecha)==1,'Enero',month(fecha)==2,'Febrero',month(fecha)==3,'Marzo',month(fecha)==4,'Abril',month(fecha)==5,'Mayo',month(fecha)==6,'Junio',month(fecha)==7,'Julio',month(fecha)==8,'Agosto',month(fecha)==9,'Septiembre',month(fecha)==10,'Octubre',month(fecha)==11,'Noviembre','Diciembre'),",
 						"          trimestre = case(month(fecha)<=3,1,month(fecha)<=6,2,month(fecha)<=9,3,4),",
 						"          dia_semana = case(dayOfWeek(fecha)==1,'Domingo',dayOfWeek(fecha)==2,'Lunes',dayOfWeek(fecha)==3,'Martes',dayOfWeek(fecha)==4,'Miércoles',dayOfWeek(fecha)==5,'Jueves',dayOfWeek(fecha)==6,'Viernes','Sábado')) ~> GenerarCampos",
+						"FechasDistintas filter(!isNull(fecha)) ~> FiltrarNulos",
 						"GenerarCampos sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",

@@ -876,6 +876,9 @@
 					"referenceName": "ls_destino_dw_ffaa",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "gold"
+				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
