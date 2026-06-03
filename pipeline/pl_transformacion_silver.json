@@ -5,8 +5,6 @@
 			{
 				"name": "Transformar_Efectivos",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -35,7 +33,7 @@
 					{
 						"activity": "Transformar_Efectivos",
 						"dependencyConditions": [
-							"Succeeded"
+							"Failed"
 						]
 					}
 				],
@@ -64,7 +62,7 @@
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "Transformar_Efectivos",
+						"activity": "df_bronze_a_silver_rangos",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -95,7 +93,7 @@
 				"type": "ExecuteDataFlow",
 				"dependsOn": [
 					{
-						"activity": "Transformar_Efectivos",
+						"activity": "df_bronze_a_silver_operaciones",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -124,7 +122,14 @@
 			{
 				"name": "df_bronze_a_silver_movimientos_personal",
 				"type": "ExecuteDataFlow",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "df_bronze_a_silver_unidades",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
