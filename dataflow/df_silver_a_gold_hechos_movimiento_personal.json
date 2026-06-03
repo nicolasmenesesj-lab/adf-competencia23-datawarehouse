@@ -63,7 +63,6 @@
 				"     insertable:true,",
 				"     updateable:false,",
 				"     upsertable:false,",
-				"     truncate:true,",
 				"     format: 'table',",
 				"     preSQLs:['DELETE FROM gold.hechos_movimiento_personal'],",
 				"     skipDuplicateMapInputs: true,",
