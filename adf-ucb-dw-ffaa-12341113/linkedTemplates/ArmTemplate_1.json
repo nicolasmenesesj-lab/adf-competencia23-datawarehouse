@@ -13,6 +13,56 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_silver_tbl_operaciones')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_operacion",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "nombre_operacion",
+						"type": "varchar"
+					},
+					{
+						"name": "tipo_operacion",
+						"type": "varchar"
+					},
+					{
+						"name": "fecha_inicio",
+						"type": "date"
+					},
+					{
+						"name": "fecha_fin",
+						"type": "date"
+					},
+					{
+						"name": "presupuesto_asignado",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					}
+				],
+				"typeProperties": {
+					"schema": "silver",
+					"table": "tbl_operaciones"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_silver_tbl_rangos')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -917,7 +967,9 @@
 					]
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_operaciones')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/df_bronze_a_silver_rangos')]",
@@ -1243,6 +1295,168 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/df_silver_a_gold_dim_tiempo')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_silver_movimientos",
+								"type": "DatasetReference"
+							},
+							"name": "movimientos"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_silver_tbl_operaciones",
+								"type": "DatasetReference"
+							},
+							"name": "operacione1"
+						},
+						{
+							"dataset": {
+								"referenceName": "ds_silver_tbl_operaciones",
+								"type": "DatasetReference"
+							},
+							"name": "operacion2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ds_gold_dim_tiempo",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "select3"
+						},
+						{
+							"name": "union1"
+						},
+						{
+							"name": "FechasDistintas"
+						},
+						{
+							"name": "GenerarCampos"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          id_movimiento as integer,",
+						"          id_efectivo as integer,",
+						"          id_unidad_destino as integer,",
+						"          id_rango as integer,",
+						"          id_tipo as integer,",
+						"          fecha_movimiento as date,",
+						"          antiguedad_anios as integer,",
+						"          salario_mensual as decimal(18,2),",
+						"          observaciones as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'SELECT DISTINCT fecha_movimiento AS fecha \\nFROM silver.tbl_movimientos_personal\\nWHERE fecha_movimiento IS NOT NULL',",
+						"     format: 'query') ~> movimientos",
+						"source(output(",
+						"          id_operacion as integer,",
+						"          nombre_operacion as string,",
+						"          tipo_operacion as string,",
+						"          fecha_inicio as date,",
+						"          fecha_fin as date,",
+						"          presupuesto_asignado as decimal(18,2)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'SELECT DISTINCT fecha_inicio AS fecha \\nFROM silver.tbl_operaciones\\nWHERE fecha_inicio IS NOT NULL',",
+						"     format: 'query') ~> operacione1",
+						"source(output(",
+						"          id_operacion as integer,",
+						"          nombre_operacion as string,",
+						"          tipo_operacion as string,",
+						"          fecha_inicio as date,",
+						"          fecha_fin as date,",
+						"          presupuesto_asignado as decimal(18,2)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     query: 'SELECT DISTINCT fecha_fin AS fecha \\nFROM silver.tbl_operaciones  \\nWHERE fecha_fin IS NOT NULL',",
+						"     format: 'query') ~> operacion2",
+						"movimientos select(mapColumn(",
+						"          fecha = fecha_movimiento",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"operacione1 select(mapColumn(",
+						"          fecha = fecha_inicio",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"operacion2 select(mapColumn(",
+						"          fecha = fecha_fin",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select3",
+						"select1, select2, select3 union(byName: true)~> union1",
+						"union1 aggregate(groupBy(fecha),",
+						"     total = count(1)) ~> FechasDistintas",
+						"FechasDistintas derive(id_tiempo = year(fecha)*10000 + month(fecha)*100 + dayOfMonth(fecha),",
+						"          anio = year(fecha),",
+						"          mes = month(fecha),",
+						"          nombre_mes = case(month(fecha)==1,'Enero',month(fecha)==2,'Febrero',month(fecha)==3,'Marzo',month(fecha)==4,'Abril',month(fecha)==5,'Mayo',month(fecha)==6,'Junio',month(fecha)==7,'Julio',month(fecha)==8,'Agosto',month(fecha)==9,'Septiembre',month(fecha)==10,'Octubre',month(fecha)==11,'Noviembre','Diciembre'),",
+						"          trimestre = case(month(fecha)<=3,1,month(fecha)<=6,2,month(fecha)<=9,3,4),",
+						"          dia_semana = case(dayOfWeek(fecha)==1,'Domingo',dayOfWeek(fecha)==2,'Lunes',dayOfWeek(fecha)==3,'Martes',dayOfWeek(fecha)==4,'Miércoles',dayOfWeek(fecha)==5,'Jueves',dayOfWeek(fecha)==6,'Viernes','Sábado')) ~> GenerarCampos",
+						"GenerarCampos sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          id_tiempo as integer,",
+						"          fecha as date,",
+						"          anio as integer,",
+						"          mes as integer,",
+						"          nombre_mes as string,",
+						"          trimestre as integer,",
+						"          dia_semana as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     preSQLs:['DELETE FROM gold.dim_tiempo'],",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          id_tiempo,",
+						"          fecha,",
+						"          anio,",
+						"          mes,",
+						"          nombre_mes,",
+						"          trimestre,",
+						"          dia_semana",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_operaciones')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/df_silver_a_gold_dim_unidad')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -1353,6 +1567,27 @@
 									"sink1": {}
 								}
 							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
 							"staging": {},
 							"compute": {
 								"coreCount": 8,

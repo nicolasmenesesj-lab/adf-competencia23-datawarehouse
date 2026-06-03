@@ -750,6 +750,9 @@
 					"referenceName": "ls_destino_dw_ffaa",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "gold"
+				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
@@ -793,6 +796,9 @@
 					"referenceName": "ls_destino_dw_ffaa",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "gold"
+				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
@@ -828,6 +834,9 @@
 					"referenceName": "ls_destino_dw_ffaa",
 					"type": "LinkedServiceReference"
 				},
+				"folder": {
+					"name": "gold"
+				},
 				"annotations": [],
 				"type": "AzureSqlTable",
 				"schema": [
@@ -859,6 +868,60 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_gold_dim_tiempo')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_tiempo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "fecha",
+						"type": "date"
+					},
+					{
+						"name": "anio",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "mes",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "nombre_mes",
+						"type": "varchar"
+					},
+					{
+						"name": "trimestre",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "dia_semana",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "gold",
+					"table": "dim_tiempo"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_gold_dim_unidad')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -866,6 +929,9 @@
 				"linkedServiceName": {
 					"referenceName": "ls_destino_dw_ffaa",
 					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "gold"
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
@@ -1024,58 +1090,6 @@
 				"typeProperties": {
 					"schema": "silver",
 					"table": "tbl_efectivos"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_silver_tbl_operaciones')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_destino_dw_ffaa",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "silver"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id_operacion",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "nombre_operacion",
-						"type": "varchar"
-					},
-					{
-						"name": "tipo_operacion",
-						"type": "varchar"
-					},
-					{
-						"name": "fecha_inicio",
-						"type": "date"
-					},
-					{
-						"name": "fecha_fin",
-						"type": "date"
-					},
-					{
-						"name": "presupuesto_asignado",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 2
-					}
-				],
-				"typeProperties": {
-					"schema": "silver",
-					"table": "tbl_operaciones"
 				}
 			},
 			"dependsOn": [
