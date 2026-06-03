@@ -2235,7 +2235,14 @@
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> DestinoSilverUnidades"
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          id_unidad,",
+						"          nombre,",
+						"          ciudad,",
+						"          departamento,",
+						"          tipo_cuartel",
+						"     )) ~> DestinoSilverUnidades"
 					]
 				}
 			},
