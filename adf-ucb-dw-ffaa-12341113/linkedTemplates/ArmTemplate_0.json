@@ -89,6 +89,59 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_bronze_movimientos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "bronze"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_movimiento",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_efectivo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_unidad_origen",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_unidad_destino",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "fecha_orden",
+						"type": "varchar"
+					},
+					{
+						"name": "motivo_cambio",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "bronze",
+					"table": "tbl_movimientos_personal"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_bronze_tbl_efectivos')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -246,6 +299,108 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_bronze_tbl_unidades')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "bronze"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_unidad",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "nombre_unidad",
+						"type": "varchar"
+					},
+					{
+						"name": "tipo_unidad",
+						"type": "varchar"
+					},
+					{
+						"name": "id_division",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ubicacion_geografica",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "bronze",
+					"table": "tbl_unidades"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_bronze_unidades')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_fuente_fuerzas_armadas",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "bronze"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_unidad",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_brigada",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "nombre",
+						"type": "nvarchar"
+					},
+					{
+						"name": "codigo",
+						"type": "varchar"
+					},
+					{
+						"name": "ciudad",
+						"type": "nvarchar"
+					},
+					{
+						"name": "departamento",
+						"type": "nvarchar"
+					},
+					{
+						"name": "tipo_cuartel",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "oltp",
+					"table": "tbl_unidades"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_fuente_fuerzas_armadas')]"
 			]
 		},
 		{
@@ -532,6 +687,61 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_fuente_unidades')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_fuente_fuerzas_armadas",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "fuentes"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_unidad",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_brigada",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "nombre",
+						"type": "nvarchar"
+					},
+					{
+						"name": "codigo",
+						"type": "varchar"
+					},
+					{
+						"name": "ciudad",
+						"type": "nvarchar"
+					},
+					{
+						"name": "departamento",
+						"type": "nvarchar"
+					},
+					{
+						"name": "tipo_cuartel",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "oltp",
+					"table": "tbl_unidades"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_fuente_fuerzas_armadas')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_gold_dim_efectivo')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -642,6 +852,75 @@
 				"typeProperties": {
 					"schema": "gold",
 					"table": "dim_rango"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_silver_movimientos')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_destino_dw_ffaa",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "silver"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "id_movimiento",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_efectivo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_unidad_destino",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_rango",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "id_tipo",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "fecha_movimiento",
+						"type": "date"
+					},
+					{
+						"name": "antiguedad_anios",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "salario_mensual",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "observaciones",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "silver",
+					"table": "tbl_movimientos_personal"
 				}
 			},
 			"dependsOn": [
@@ -800,786 +1079,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_bronze_movimientos')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_destino_dw_ffaa",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "bronze"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "id_movimiento",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "id_efectivo",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "id_unidad_origen",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "id_unidad_destino",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "fecha_orden",
-						"type": "varchar"
-					},
-					{
-						"name": "motivo_cambio",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "bronze",
-					"table": "tbl_movimientos_personal"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_destino_dw_ffaa')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_extraccion_bronze')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copiar_Efectivos",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copiar_Operaciones",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "id_efectivo",
-											"type": "Int32",
-											"physicalType": "int"
-										},
-										"sink": {
-											"name": "id_efectivo",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "ci",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "ci",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "nombre",
-											"type": "String",
-											"physicalType": "nvarchar"
-										},
-										"sink": {
-											"name": "nombre",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "fecha_nacimiento",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "fecha_nacimiento",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "genero",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "genero",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "id_rango_actual",
-											"type": "Int32",
-											"physicalType": "int"
-										},
-										"sink": {
-											"name": "id_rango",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "id_unidad_actual",
-											"type": "Int32",
-											"physicalType": "int"
-										},
-										"sink": {
-											"name": "id_unidad",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "estado",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "estado",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_fuente_efectivos",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_bronze_tbl_efectivos",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Copiar_Operaciones",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copiar_Rangos",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "id_operacion",
-											"type": "Int32",
-											"physicalType": "int"
-										},
-										"sink": {
-											"name": "id_operacion",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "nombre_operacion",
-											"type": "String",
-											"physicalType": "nvarchar"
-										},
-										"sink": {
-											"name": "nombre_operacion",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "id_tipo",
-											"type": "Int32",
-											"physicalType": "int"
-										},
-										"sink": {
-											"name": "tipo_operacion",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "fecha_inicio",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "fecha_inicio",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "fecha_fin",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "fecha_fin",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "costo_operacion",
-											"type": "String",
-											"physicalType": "varchar"
-										},
-										"sink": {
-											"name": "presupuesto_asignado",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_fuente_operaciones",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_bronze_tbl_operaciones",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Copiar_Rangos",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "id_rango",
-											"type": "Int32",
-											"physicalType": "int"
-										},
-										"sink": {
-											"name": "id_rango",
-											"type": "Int32",
-											"physicalType": "int"
-										}
-									},
-									{
-										"source": {
-											"name": "nombre",
-											"type": "String",
-											"physicalType": "nvarchar"
-										},
-										"sink": {
-											"name": "descripcion_rango",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "categoria",
-											"type": "String",
-											"physicalType": "nvarchar"
-										},
-										"sink": {
-											"name": "categoria_rango",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									},
-									{
-										"source": {
-											"name": "nivel_jerarquico",
-											"type": "Int32",
-											"physicalType": "int"
-										},
-										"sink": {
-											"name": "fuerza",
-											"type": "String",
-											"physicalType": "varchar"
-										}
-									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_fuente_rangos",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_bronze_tbl_rangos",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Copiar_Movimientos",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "Copiar_Efectivos",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"preCopyScript": "TRUNCATE TABLE bronze.tbl_movimientos_personal",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
-								"disableMetricsCollection": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_fuente_movimientos",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "ds_bronze_movimientos",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_fuente_efectivos')]",
-				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_efectivos')]",
-				"[concat(variables('factoryId'), '/datasets/ds_fuente_operaciones')]",
-				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_operaciones')]",
-				"[concat(variables('factoryId'), '/datasets/ds_fuente_rangos')]",
-				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_rangos')]",
-				"[concat(variables('factoryId'), '/datasets/ds_fuente_movimientos')]",
-				"[concat(variables('factoryId'), '/datasets/ds_bronze_movimientos')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/df_bronze_a_silver_efectivos')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_bronze_tbl_efectivos",
-								"type": "DatasetReference"
-							},
-							"name": "OrigenBronzeEfectivos"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_silver_tbl_efectivos",
-								"type": "DatasetReference"
-							},
-							"name": "DestinoSilverEfectivos"
-						}
-					],
-					"transformations": [
-						{
-							"name": "ConstruirCamposSilver"
-						},
-						{
-							"name": "MapeoEfectivos"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          id_efectivo as integer,",
-						"          ci as string,",
-						"          nombre as string,",
-						"          paterno as string,",
-						"          materno as string,",
-						"          fecha_nacimiento as string,",
-						"          genero as string,",
-						"          id_rango as integer,",
-						"          id_unidad as integer,",
-						"          estado as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> OrigenBronzeEfectivos",
-						"MapeoEfectivos derive(nombre_completo = initCap(nombre),",
-						"          paterno = 'No Registrado',",
-						"          materno = 'No Registrado') ~> ConstruirCamposSilver",
-						"OrigenBronzeEfectivos select(mapColumn(",
-						"          id_efectivo,",
-						"          ci,",
-						"          nombre,",
-						"          paterno,",
-						"          materno,",
-						"          fecha_nacimiento,",
-						"          genero,",
-						"          id_rango,",
-						"          id_unidad,",
-						"          estado",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> MapeoEfectivos",
-						"ConstruirCamposSilver sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          id_efectivo as integer,",
-						"          ci as string,",
-						"          nombre_completo as string,",
-						"          fecha_nacimiento as date,",
-						"          genero as string,",
-						"          id_rango as integer,",
-						"          id_unidad as integer,",
-						"          estado as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> DestinoSilverEfectivos"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_efectivos')]",
-				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_efectivos')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/df_bronze_a_silver_operaciones')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_bronze_tbl_operaciones",
-								"type": "DatasetReference"
-							},
-							"name": "OrigenBronzeOperaciones"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_silver_tbl_operaciones",
-								"type": "DatasetReference"
-							},
-							"name": "DestinoSilverOperaciones"
-						}
-					],
-					"transformations": [
-						{
-							"name": "MapeoOperaciones"
-						},
-						{
-							"name": "ConvertirTiposOperaciones"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          id_operacion as integer,",
-						"          nombre_operacion as string,",
-						"          tipo_operacion as string,",
-						"          fecha_inicio as string,",
-						"          fecha_fin as string,",
-						"          presupuesto_asignado as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> OrigenBronzeOperaciones",
-						"OrigenBronzeOperaciones select(mapColumn(",
-						"          id_operacion,",
-						"          nombre_operacion,",
-						"          tipo_operacion,",
-						"          fecha_inicio,",
-						"          fecha_fin,",
-						"          presupuesto_limpio = presupuesto_asignado",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> MapeoOperaciones",
-						"MapeoOperaciones derive(presupuesto_asignado = iif(\r",
-						"  isNull(presupuesto_limpio) || trim(presupuesto_limpio) == '' || trim(presupuesto_limpio) == 'NULL',\r",
-						"  toDecimal(0.0, 18, 2),\r",
-						"  iif(\r",
-						"    isNull(toDecimal(regexReplace(regexReplace(presupuesto_limpio, '[^0-9.]', ''), '\\\\.(?=.*\\\\.)', ''), 18, 2)),\r",
-						"    toDecimal(0.0, 18, 2),\r",
-						"    toDecimal(regexReplace(regexReplace(presupuesto_limpio, '[^0-9.]', ''), '\\\\.(?=.*\\\\.)', ''), 18, 2)\r",
-						"  )\r",
-						")) ~> ConvertirTiposOperaciones",
-						"ConvertirTiposOperaciones sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          id_operacion as integer,",
-						"          nombre_operacion as string,",
-						"          tipo_operacion as string,",
-						"          fecha_inicio as date,",
-						"          fecha_fin as date,",
-						"          presupuesto_asignado as decimal(18,2)",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError',",
-						"     mapColumn(",
-						"          id_operacion,",
-						"          nombre_operacion,",
-						"          tipo_operacion,",
-						"          fecha_inicio,",
-						"          fecha_fin,",
-						"          presupuesto_asignado",
-						"     )) ~> DestinoSilverOperaciones"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_operaciones')]",
-				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_operaciones')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/df_bronze_a_silver_rangos')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_bronze_tbl_rangos",
-								"type": "DatasetReference"
-							},
-							"name": "OrigenBronzeRangos"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "ds_silver_tbl_rangos",
-								"type": "DatasetReference"
-							},
-							"name": "DestinoSilverRangos"
-						}
-					],
-					"transformations": [
-						{
-							"name": "MapeoRangos"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          id_rango as integer,",
-						"          descripcion_rango as string,",
-						"          categoria_rango as string,",
-						"          fuerza as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     isolationLevel: 'READ_UNCOMMITTED',",
-						"     format: 'table') ~> OrigenBronzeRangos",
-						"OrigenBronzeRangos select(mapColumn(",
-						"          id_rango,",
-						"          descripcion_rango,",
-						"          categoria_rango,",
-						"          fuerza",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> MapeoRangos",
-						"MapeoRangos sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          id_rango as integer,",
-						"          descripcion_rango as string,",
-						"          categoria_rango as string,",
-						"          fuerza as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> DestinoSilverRangos"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_bronze_tbl_rangos')]",
-				"[concat(variables('factoryId'), '/datasets/ds_silver_tbl_rangos')]"
 			]
 		}
 	]
