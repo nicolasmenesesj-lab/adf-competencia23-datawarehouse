@@ -144,7 +144,7 @@
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          id_tiempo,",
-				"          fecha = FechasDistintas@fecha,",
+				"          fecha,",
 				"          anio,",
 				"          mes,",
 				"          nombre_mes,",
