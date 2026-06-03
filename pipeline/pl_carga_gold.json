@@ -5,8 +5,6 @@
 			{
 				"name": "df_silver_a_gold_dim_unidad",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "dim_efectivo",
@@ -38,8 +36,6 @@
 			{
 				"name": "df_silver_a_gold_dim_tiempo",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "df_silver_a_gold_dim_unidad",
@@ -71,8 +67,6 @@
 			{
 				"name": "df_silver_a_gold_hechos_movimiento_personal",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "df_silver_a_gold_dim_tiempo",
@@ -104,8 +98,6 @@
 			{
 				"name": "dim_rango",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
