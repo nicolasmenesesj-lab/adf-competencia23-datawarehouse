@@ -952,6 +952,7 @@
 						"     insertable:true,",
 						"     updateable:false,",
 						"     upsertable:false,",
+						"     truncate:true,",
 						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
@@ -1574,27 +1575,6 @@
 							},
 							"traceLevel": "Fine"
 						}
-					},
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
 					}
 				],
 				"policy": {
@@ -1752,6 +1732,43 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "df_bronze_a_silver_movimientos_personal",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Transformar_Efectivos",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bronze_a_silver_movimientos_personal",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SourceBronzeMovimientos": {},
+									"SinkSilverMovimientos": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -1763,7 +1780,8 @@
 				"[concat(variables('factoryId'), '/dataflows/df_bronze_a_silver_efectivos')]",
 				"[concat(variables('factoryId'), '/dataflows/df_bronze_a_silver_rangos')]",
 				"[concat(variables('factoryId'), '/dataflows/df_bronze_a_silver_operaciones')]",
-				"[concat(variables('factoryId'), '/dataflows/df_bronze_a_silver_unidades')]"
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_a_silver_unidades')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bronze_a_silver_movimientos_personal')]"
 			]
 		}
 	]
