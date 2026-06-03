@@ -998,7 +998,9 @@
 						"    toDecimal(0.0, 18, 2),\r",
 						"    toDecimal(regexReplace(regexReplace(presupuesto_limpio, '[^0-9.]', ''), '\\\\.(?=.*\\\\.)', ''), 18, 2)\r",
 						"  )\r",
-						")) ~> ConvertirTiposOperaciones",
+						"),",
+						"          fecha_inicio = toDate(fecha_inicio, 'yyyy-MM-dd'),",
+						"          fecha_fin = toDate(fecha_fin, 'yyyy-MM-dd')) ~> ConvertirTiposOperaciones",
 						"ConvertirTiposOperaciones sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
@@ -1703,8 +1705,6 @@
 					{
 						"name": "df_silver_a_gold_dim_unidad",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "dim_efectivo",
@@ -1742,8 +1742,6 @@
 					{
 						"name": "df_silver_a_gold_dim_tiempo",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "df_silver_a_gold_dim_unidad",
@@ -1783,8 +1781,6 @@
 					{
 						"name": "df_silver_a_gold_hechos_movimiento_personal",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "df_silver_a_gold_dim_tiempo",
@@ -1822,8 +1818,6 @@
 					{
 						"name": "dim_rango",
 						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -1945,7 +1939,7 @@
 							{
 								"activity": "Transformar_Efectivos",
 								"dependencyConditions": [
-									"Failed"
+									"Succeeded"
 								]
 							}
 						],
