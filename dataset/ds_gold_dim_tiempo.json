@@ -1,41 +1,49 @@
 {
-	"name": "ds_gold_dim_efectivo",
+	"name": "ds_gold_dim_tiempo",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_destino_dw_ffaa",
 			"type": "LinkedServiceReference"
 		},
-		"folder": {
-			"name": "gold"
-		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
 			{
-				"name": "id_efective",
+				"name": "id_tiempo",
 				"type": "int",
 				"precision": 10
 			},
 			{
-				"name": "ci",
+				"name": "fecha",
+				"type": "date"
+			},
+			{
+				"name": "anio",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "mes",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "nombre_mes",
 				"type": "varchar"
 			},
 			{
-				"name": "nombre_completo",
-				"type": "varchar"
+				"name": "trimestre",
+				"type": "int",
+				"precision": 10
 			},
 			{
-				"name": "genero",
-				"type": "varchar"
-			},
-			{
-				"name": "estado",
+				"name": "dia_semana",
 				"type": "varchar"
 			}
 		],
 		"typeProperties": {
 			"schema": "gold",
-			"table": "dim_efectivo"
+			"table": "dim_tiempo"
 		}
 	}
 }
